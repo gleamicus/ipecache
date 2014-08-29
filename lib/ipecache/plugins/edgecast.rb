@@ -43,6 +43,10 @@ module Ipecache
           end
 
           response = connection.put("/v2/mcc/customers/#{account_id}/edge/purge",{ :MediaPath => url, :MediaType => 8})
+          if response.status == 400
+            plugin_puts "Failed to purge from small file, retrying from large file"
+            response = connection.put("/v2/mcc/customers/#{account_id}/edge/purge",{ :MediaPath => url, :MediaType => 3})
+          end
 
           if response.status != 200
             plugin_puts_error(url,"Response Code: #{response.status}")
